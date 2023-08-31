@@ -20,8 +20,8 @@ public class Inventario {
     @Column(name = "SKU")
     private Long sku;
 
-    @Column(name = "Nombre", unique = true)
-    private String nombre;
+    @Column(name = "Nombre")
+    private String nombreSku;
 
     @Column(name = "Cantidad")
     private Integer cantidad;

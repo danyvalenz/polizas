@@ -1,10 +1,8 @@
 package com.polizas.polizas.controller;
 
-import com.polizas.polizas.dto.Meta;
 import com.polizas.polizas.dto.ResponseDTO;
-import com.polizas.polizas.model.Empleado;
-import com.polizas.polizas.service.EmpleadoService;
-import com.polizas.polizas.service.impl.EmpleadoServiceImpl;
+import com.polizas.polizas.model.Polizas;
+import com.polizas.polizas.service.impl.PolizasServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,39 +11,28 @@ import java.util.List;
 @RequestMapping("/api")
 public class PolizasController {
 
-    private final EmpleadoServiceImpl empleadoService;
+    private final PolizasServiceImpl polizasService;
 
-    public PolizasController(EmpleadoServiceImpl empleadoService) {
-        this.empleadoService = empleadoService;
+    public PolizasController(PolizasServiceImpl polizasService) {
+        this.polizasService = polizasService;
     }
 
 
-    @GetMapping("/saludo")
-    public String saludo()
+    @GetMapping("/todaslasPolizas")
+    public List<Polizas> todasLasPolizas()
     {
-        return "Saludo";
+        return polizasService.obtenerPolizas();
     }
 
-
-    @GetMapping("/response")
-    public ResponseDTO responseDTO()
+    @GetMapping("/crearPoliza")
+    public Polizas crearPoliza(@RequestBody Polizas poliza)
     {
-        ResponseDTO responseDTO = new ResponseDTO();
-        Meta meta = new Meta("OK");
-        responseDTO.setMeta(meta);
-        responseDTO.setData(meta);
-        return responseDTO;
+        return polizasService.crearPoliza(poliza);
     }
 
-    @PostMapping("/AltaEmpleado")
-    public Empleado crearEmpleado(@RequestBody Empleado empleado)
+    @GetMapping("/consultar/{idpoliza}")
+    public ResponseDTO consultarpolizaporID(@PathVariable("idpoliza") Long idPoliza)
     {
-        return empleadoService.insertarEmepleado(empleado);
-    }
-
-    @GetMapping("/todoslosEmpleados")
-    public List<Empleado> obtenerTodosLosEmpleados()
-    {
-        return empleadoService.obtenerTodoslosEmpleados();
+        return polizasService.consultarPolizaporId(idPoliza);
     }
 }
