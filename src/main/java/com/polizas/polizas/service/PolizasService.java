@@ -15,4 +15,6 @@ public interface PolizasService {
 
     public ResponseDTO consultarPolizaporId(Long idPoliza);
 
+    public String elimiarPoliza(Long poliza);
+
 }

@@ -17,6 +17,7 @@ public class Polizas {
 
     @Id
     @Column(name = "Id_Poliza")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idPolizas;
 
     @Column(name = "Cantidad")

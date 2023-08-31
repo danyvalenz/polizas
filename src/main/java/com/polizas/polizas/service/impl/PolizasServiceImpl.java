@@ -1,9 +1,12 @@
 package com.polizas.polizas.service.impl;
 
 import com.polizas.polizas.dto.*;
+import com.polizas.polizas.model.Inventario;
 import com.polizas.polizas.model.Polizas;
+import com.polizas.polizas.repository.InventariosRepository;
 import com.polizas.polizas.repository.PolizaRepository;
 import com.polizas.polizas.service.PolizasService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,9 +16,12 @@ import java.util.Optional;
 public class PolizasServiceImpl implements PolizasService {
 
     private final PolizaRepository polizasRepository;
+    private final InventariosRepository inventariosRepository;
 
-    public PolizasServiceImpl(PolizaRepository polizasRepository) {
+    @Autowired
+    public PolizasServiceImpl(PolizaRepository polizasRepository, InventariosRepository inventariosRepository) {
         this.polizasRepository = polizasRepository;
+        this.inventariosRepository = inventariosRepository;
     }
 
 
@@ -26,6 +32,17 @@ public class PolizasServiceImpl implements PolizasService {
 
     @Override
     public Polizas crearPoliza(Polizas poliza) {
+
+       Optional<Inventario> inventario = inventariosRepository.findById(poliza.getInventario().getSku());
+       if(inventario.isPresent())
+       {
+           //proceso que se encarga de descontar la cantidad del inventario
+           Inventario inv = inventario.get();
+           Integer cantidadDescontar = inventario.get().getCantidad() - poliza.getCantidad();
+           inv.setCantidad(cantidadDescontar);
+           inventariosRepository.save(inv);
+       }
+
         return polizasRepository.save(poliza);
     }
 
@@ -60,5 +77,27 @@ public class PolizasServiceImpl implements PolizasService {
 
 
         return responseDTO;
+    }
+
+    @Override
+    public String elimiarPoliza(Long poliza) {
+        Optional<Polizas> polizasOptional = polizasRepository.findById(poliza);
+        if (polizasOptional.isPresent())
+        {
+            Polizas polizaEliminar = polizasOptional.get();
+            Integer cantidaRegresaInventario = polizaEliminar.getCantidad();
+            Optional<Inventario> inventarioOptional = inventariosRepository.findById(polizaEliminar.getInventario().getSku());
+            if (inventarioOptional.isPresent())
+            {
+                Inventario inventarioActualizar = inventarioOptional.get();
+                inventarioActualizar.setCantidad(inventarioActualizar.getCantidad()+cantidaRegresaInventario);
+                inventariosRepository.save(inventarioActualizar);
+            }
+            polizasRepository.delete(polizaEliminar);
+            return "Poliza eliminada con exito";
+        }else {
+            return "Poliza No encontrada";
+        }
+
     }
 }

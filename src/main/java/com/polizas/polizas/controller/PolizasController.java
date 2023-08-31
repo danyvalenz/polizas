@@ -24,9 +24,10 @@ public class PolizasController {
         return polizasService.obtenerPolizas();
     }
 
-    @GetMapping("/crearPoliza")
+    @PostMapping("/crearPoliza")
     public Polizas crearPoliza(@RequestBody Polizas poliza)
     {
+
         return polizasService.crearPoliza(poliza);
     }
 
@@ -34,5 +35,12 @@ public class PolizasController {
     public ResponseDTO consultarpolizaporID(@PathVariable("idpoliza") Long idPoliza)
     {
         return polizasService.consultarPolizaporId(idPoliza);
+    }
+
+    @DeleteMapping("/eliminar/{idpoliza}")
+    public String eliminarExito(@PathVariable("idpoliza") Long idPoliza)
+    {
+
+        return polizasService.elimiarPoliza(idPoliza);
     }
 }
